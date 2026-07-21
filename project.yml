@@ -12,7 +12,7 @@ packages:
   # `path: ../la-trace-map-sdk-swift`.
   LaTraceMapSDK:
     url: https://github.com/latrace-code/la-trace-map-sdk-swift.git
-    from: "1.0.0"
+    from: "1.0.2"
 
 targets:
   LaTraceExample:
