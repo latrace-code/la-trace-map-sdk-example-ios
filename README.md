@@ -30,7 +30,7 @@ lignes `url:` / `branch:` par `path: ../la-trace-map-sdk-swift`.
 
 ### Quelle version du SDK
 
-`project.yml` epingle `from: "1.0.2"`. Le depot du SDK est **public** : SwiftPM le
+`project.yml` epingle `from: "1.0.3"`. Le depot du SDK est **public** : SwiftPM le
 resout sans authentification, et `from:` prend automatiquement les correctifs
 compatibles (1.0.x, 1.x) sans jamais franchir une version majeure.
 
@@ -58,7 +58,7 @@ fichiers » ne compile pas (deux `@main`) :
      `SceneDelegate`, qui installe `MapViewController`.
 5. `File > Add Package Dependencies...`, URL
    `https://github.com/latrace-code/la-trace-map-sdk-swift.git`, regle de dependance
-   **Up to Next Major Version** `1.0.2`, produit `LaTraceMapSDK`.
+   **Up to Next Major Version** `1.0.3`, produit `LaTraceMapSDK`.
 
 ## Les quatre valeurs a renseigner
 
