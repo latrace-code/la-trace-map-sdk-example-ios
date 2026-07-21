@@ -30,13 +30,9 @@ lignes `url:` / `branch:` par `path: ../la-trace-map-sdk-swift`.
 
 ### Quelle version du SDK
 
-`project.yml` reference une **branche** du SDK, `feature/sdk-swift-explore-surface`,
-et non une version. C'est volontaire : le depot du SDK ne porte aujourd'hui aucun
-tag, et sa branche `main` expose encore une autre API. Epingler `from: 0.0.1` ferait
-echouer la resolution SwiftPM des le premier build.
-
-Quand la premiere release sera taguee, une seule ligne bouge : remplacer
-`branch: feature/sdk-swift-explore-surface` par `from: <version>` dans `project.yml`.
+`project.yml` epingle `from: "1.0.0"`. Le depot du SDK est **public** : SwiftPM le
+resout sans authentification, et `from:` prend automatiquement les correctifs
+compatibles (1.0.x, 1.x) sans jamais franchir une version majeure.
 
 ### Sans XcodeGen
 
@@ -62,7 +58,7 @@ fichiers » ne compile pas (deux `@main`) :
      `SceneDelegate`, qui installe `MapViewController`.
 5. `File > Add Package Dependencies...`, URL
    `https://github.com/latrace-code/la-trace-map-sdk-swift.git`, regle de dependance
-   **Branch** `feature/sdk-swift-explore-surface`, produit `LaTraceMapSDK`.
+   **Up to Next Major Version** `1.0.0`, produit `LaTraceMapSDK`.
 
 ## Les quatre valeurs a renseigner
 
@@ -163,8 +159,8 @@ est donc simple.
 Le format exact d'un `Poi`, les commandes et les evenements du pont, ainsi que les
 endpoints REST sont decrits dans le **contrat d'API**, qui fait foi. Ce depot n'en
 embarque volontairement pas de copie : une copie diverge et vous mettrait sur une
-fausse piste. Le lien vous est fourni avec vos identifiants. La reference du SDK dans
-`project.yml` (aujourd'hui une branche, une version des la premiere release) vous dit
+fausse piste. Le lien vous est fourni avec vos identifiants. La version du SDK epinglee
+dans `project.yml` vous dit
 a quelle revision du contrat cet exemple se refere ; le SDK Swift n'en implemente que
 le sous-ensemble « carte pilotee » (pas de panneau, pas de recherche, pas de filtres
 ouverts par la carte).
