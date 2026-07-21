@@ -7,11 +7,14 @@ options:
   developmentLanguage: fr
 
 packages:
-  # SDK Swift La Trace. `from: 0.0.1` suit les versions publiees ; pour travailler
-  # contre une copie locale, remplacer les deux lignes par `path: ../la-trace-map-sdk-swift`.
+  # SDK Swift La Trace. On suit une BRANCHE et non une version : le depot du SDK
+  # ne porte encore aucun tag, et sa branche `main` expose une autre API. Quand la
+  # premiere release sera taguee, remplacer `branch:` par `from: <version>`.
+  # Pour travailler contre une copie locale, remplacer les deux lignes par
+  # `path: ../la-trace-map-sdk-swift`.
   LaTraceMapSDK:
     url: https://github.com/latrace-code/la-trace-map-sdk-swift.git
-    from: 0.0.1
+    branch: feature/sdk-swift-explore-surface
 
 targets:
   LaTraceExample:

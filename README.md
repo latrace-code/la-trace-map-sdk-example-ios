@@ -22,25 +22,65 @@ open LaTraceExample.xcodeproj
 
 Puis renseignez vos quatre valeurs dans `LaTraceExample/Config.swift` et lancez sur
 simulateur. Xcode resout le package `LaTraceMapSDK` tout seul au premier build.
-
-Sans XcodeGen : creez un projet iOS vide, ajoutez les fichiers de `LaTraceExample/`
-et le package via `File > Add Package Dependencies...` avec l'URL
-`https://github.com/latrace-code/la-trace-map-sdk-swift.git`.
+Tant que `Config.swift` porte les valeurs du depot, l'app affiche un message a la
+place de la carte : ces valeurs ne designent aucun deploiement.
 
 Pour travailler contre une copie locale du SDK, remplacez dans `project.yml` les
-lignes `url:` / `from:` par `path: ../la-trace-map-sdk-swift`.
+lignes `url:` / `branch:` par `path: ../la-trace-map-sdk-swift`.
+
+### Quelle version du SDK
+
+`project.yml` reference une **branche** du SDK, `feature/sdk-swift-explore-surface`,
+et non une version. C'est volontaire : le depot du SDK ne porte aujourd'hui aucun
+tag, et sa branche `main` expose encore une autre API. Epingler `from: 0.0.1` ferait
+echouer la resolution SwiftPM des le premier build.
+
+Quand la premiere release sera taguee, une seule ligne bouge : remplacer
+`branch: feature/sdk-swift-explore-surface` par `from: <version>` dans `project.yml`.
+
+### Sans XcodeGen
+
+XcodeGen est le chemin recommande ; ce depot ne versionne pas de `.xcodeproj`. A la
+main, la procedure exacte est celle-ci - le raccourci « projet vide + glisser les
+fichiers » ne compile pas (deux `@main`) :
+
+1. `File > New > Project > iOS > App`. Nom `LaTraceExample`, Interface **Storyboard**,
+   Language **Swift**. (L'interface SwiftUI ne genere ni `AppDelegate` ni
+   `SceneDelegate` ; cet exemple est en UIKit.)
+2. Supprimez du projet genere (« Move to Trash ») `AppDelegate.swift`,
+   `SceneDelegate.swift`, `ViewController.swift` et `Main.storyboard`. Les deux
+   premiers existent deja dans ce depot, et deux `@main` ne compilent pas.
+3. Glissez dans le target les six fichiers de `LaTraceExample/` (`AppDelegate.swift`,
+   `SceneDelegate.swift`, `Config.swift`, `ApiToPoi.swift`, `MapViewController.swift`,
+   `PoiCardView.swift`) et le dossier `Resources/`, avec « Copy items if needed » et
+   « Add to targets » coche.
+4. Le storyboard supprime laisse deux references mortes, onglet **Info** du target :
+   - `Main storyboard file base name` (`UIMainStoryboardFile`) : supprimer la ligne ;
+   - `Application Scene Manifest > Scene Configuration > Application Session Role >
+     Item 0 > Storyboard Name` : supprimer la ligne. **Gardez** `Delegate Class Name`
+     a `$(PRODUCT_MODULE_NAME).SceneDelegate` : c'est lui qui donne la main a
+     `SceneDelegate`, qui installe `MapViewController`.
+5. `File > Add Package Dependencies...`, URL
+   `https://github.com/latrace-code/la-trace-map-sdk-swift.git`, regle de dependance
+   **Branch** `feature/sdk-swift-explore-surface`, produit `LaTraceMapSDK`.
 
 ## Les quatre valeurs a renseigner
 
 | Valeur | Ce que c'est |
 | --- | --- |
 | `apiKey` | Cle publiable native (`pk_live_*`). Doit etre provisionnee avec `allowedOrigins: ["*"]` : un client natif n'envoie pas d'en-tete `Origin`, et une cle restreinte a des domaines repond 403 `origin_not_allowed` sur `/geocode` et `/static-map`. |
-| `configId` | Id de votre carte (`ClientMap`) : territoire, theme, compteur de stats. |
-| `exploreBaseURL` | Hote qui sert la carte `/explore`. Depend de l'environnement, jamais devine par le SDK. |
+| `configId` | Id de votre carte (`ClientMap`) : territoire, theme, compteur de stats. Un UUID. |
+| `exploreBaseURL` | Hote qui sert la carte `/explore`. Tous les deploiements Explore ne conviennent pas : le pont exige un front qui sert le **transport natif** (`transport=native`). C'est un fait de deploiement, pas une constante, et c'est pourquoi le SDK ne le devine jamais : La Trace vous donne l'hote qui convient a votre environnement. |
 | `apiBaseURL` | Passerelle API, qui sert `/geocode` et `/static-map`. **Pas** l'hote Explore : celui-ci repond son shell SPA sur n'importe quel chemin. |
 
-Ces valeurs vous sont transmises par La Trace. Celles du depot sont des valeurs de
-demonstration.
+**Aucune des quatre n'est devinable et aucune n'est dans ce depot** : il est public,
+il ne contient donc ni cle, ni id de carte, ni hote reel. Les valeurs livrees sont
+des marqueurs (`a-remplacer`, et le TLD reserve `.invalid` pour les deux URL) que
+`Config.isPlaceholder` reconnait pour afficher un message au lancement.
+
+Les vraies valeurs vous sont transmises par La Trace avec vos identifiants de demo,
+en meme temps que le lien vers le contrat d'API. Pendant l'integration, tout tourne
+en preprod ; l'hote de production vous est communique a la mise en service.
 
 ## Les 3 briques
 
@@ -64,6 +104,7 @@ demonstration.
 | `LaTraceExample/Config.swift` | Les quatre valeurs d'integration + la palette de marqueurs par categorie. |
 | `LaTraceExample/MapViewController.swift` | Init de la carte, push des lieux, ecoute des evenements, recherche de lieu, vignette statique, bouton « rechercher dans cette zone ». |
 | `LaTraceExample/PoiCardView.swift` | La fiche, cote hote. Rien de La Trace : la carte n'ouvre aucun panneau. |
+| `LaTraceExample/AppDelegate.swift`, `SceneDelegate.swift` | Amorcage UIKit standard, sans rien de La Trace : ils installent `MapViewController` comme ecran racine. |
 | `LaTraceExample/Resources/sample-pois.json` | Jeu de donnees d'exemple, a remplacer par votre API. |
 | `project.yml` | Projet Xcode (XcodeGen) + dependance SwiftPM vers le SDK. |
 
@@ -81,7 +122,7 @@ demonstration.
   fiche. Le defaut de l'embed (`panel`) ouvrirait un panneau invisible sous le mode nu,
   et le marqueur tape resterait emphase indefiniment.
 
-## Deux pieges du mode natif
+## Trois pieges du mode natif
 
 - **`searchArea` n'arrive jamais.** Le SDK charge la carte en mode nu, ou le bouton
   « rechercher dans cette zone » de l'embed est masque : il n'emet donc pas cet
@@ -93,6 +134,12 @@ demonstration.
   bottom sheet sans coller les marqueurs aux trois autres bords, renseignez les quatre
   cotes ; pour garder le defaut de l'embed (40 px partout en mode nu), ne passez pas
   de padding du tout.
+- **iOS peut tuer le process web sous vos pieds**, et le SDK recharge alors la carte
+  vierge : corpus, cadrage et marqueur selectionne sont perdus tous les trois. Le SDK
+  previent par `onReloaded` mais ne rejoue rien, et la carte ne rend pas son etat :
+  c'est a l'hote de garder ce qu'il a pousse pour le repousser. C'est ce que font
+  `pushedPois` / `lastViewport` / `selectedPoiId` dans `MapViewController`. N'appelez
+  pas `trackOpen()` la : l'embed a redemarre, son ouverture est deja comptee.
 
 ## Cles et secrets
 
@@ -116,10 +163,11 @@ est donc simple.
 Le format exact d'un `Poi`, les commandes et les evenements du pont, ainsi que les
 endpoints REST sont decrits dans le **contrat d'API**, qui fait foi. Ce depot n'en
 embarque volontairement pas de copie : une copie diverge et vous mettrait sur une
-fausse piste. Le lien vous est fourni avec vos identifiants. La version du SDK
-epinglee dans `project.yml` vous dit a quelle revision du contrat cet exemple se
-refere ; le SDK Swift n'en implemente que le sous-ensemble « carte pilotee » (pas de
-panneau, pas de recherche, pas de filtres ouverts par la carte).
+fausse piste. Le lien vous est fourni avec vos identifiants. La reference du SDK dans
+`project.yml` (aujourd'hui une branche, une version des la premiere release) vous dit
+a quelle revision du contrat cet exemple se refere ; le SDK Swift n'en implemente que
+le sous-ensemble « carte pilotee » (pas de panneau, pas de recherche, pas de filtres
+ouverts par la carte).
 
 ## Ce que l'exemple ne montre pas
 
@@ -147,3 +195,7 @@ Notees ici parce qu'elles se voient a l'usage, pas dans la doc du SDK.
    sont dans `MapViewController`, section « Geometrie »).
 4. **Pas d'equivalent Swift de `categoryLabels` / `wording`.** `ConfigOverride` ne les
    expose pas ; sans consequence en mode nu, ou ce chrome n'est pas rendu.
+5. **Rien pour restaurer l'etat apres `onReloaded`.** Le SDK documente que le corpus,
+   la camera et la selection sont perdus, mais n'expose ni relecture de l'etat de la
+   carte ni rejeu automatique : l'hote doit tenir lui-meme ces trois choses. C'est le
+   seul endroit de cet exemple ou l'integrateur paie un etat en double.

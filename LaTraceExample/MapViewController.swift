@@ -48,11 +48,23 @@ final class MapViewController: UIViewController {
     private var thumbnailTask: URLSessionDataTask?
     private var searchTask: Task<Void, Never>?
 
+    /// Ce que la carte porte aujourd'hui : corpus pousse et fiche ouverte. La carte
+    /// ne les rend pas a l'hote, et un redemarrage du process web les efface, donc
+    /// c'est a l'hote de les tenir pour pouvoir les rejouer (voir `onReloaded`).
+    private var pushedPois: [Poi] = []
+    private var selectedPoiId: String?
+
     // MARK: - Cycle de vie
 
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
+
+        guard !Config.isPlaceholder else {
+            showConfigurationNotice()
+            return
+        }
+
         layout()
         wireEvents()
 
@@ -67,17 +79,20 @@ final class MapViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        guard !Config.isPlaceholder else { return }
         mapView.setVisible(true)
     }
 
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
+        guard !Config.isPlaceholder else { return }
         mapView.setVisible(false)
     }
 
     deinit {
         searchTask?.cancel()
         thumbnailTask?.cancel()
+        guard !Config.isPlaceholder else { return }
         // Envoie les compteurs d'usage en attente pendant que la web view vit encore.
         mapView.map.destroy()
     }
@@ -111,16 +126,28 @@ final class MapViewController: UIViewController {
         }
 
         // Apres un redemarrage du process web (iOS recycle les web views), tout ce que
-        // l'hote avait pousse est perdu : on re-pousse.
+        // l'hote avait pousse est perdu : le corpus, le cadrage et la selection. Le
+        // SDK ne les rejoue pas a notre place, on rejoue les trois.
         mapView.onReloaded = { [weak self] in
             guard let self else { return }
-            self.pushCorpus(self.pois)
+            self.pushCorpus(self.pushedPois)
+            if let viewport = self.lastViewport {
+                // Restituer le cadrage par `fitBounds(viewport.bbox)` reappliquerait
+                // le padding de l'embed et dezoomerait a chaque redemarrage.
+                self.mapView.map.flyTo(CameraTarget(center: viewport.center, zoom: viewport.zoom))
+            } else if let bbox = Self.boundingBox(of: self.pushedPois) {
+                self.mapView.map.fitBounds(bbox)
+            }
+            if let selectedPoiId = self.selectedPoiId {
+                self.mapView.map.highlightPin(selectedPoiId)
+            }
         }
     }
 
     // MARK: - Corpus
 
     private func pushCorpus(_ pois: [Poi]) {
+        pushedPois = pois
         // `setPois` REMPLACE tout le corpus et rend ce qu'il a refuse cote client
         // (id vide, coordonnees non finies).
         let result = mapView.map.setPois(pois)
@@ -150,6 +177,7 @@ final class MapViewController: UIViewController {
 
     private func showCard(for poiId: String) {
         guard let record = records.first(where: { $0.id == poiId }) else { return }
+        selectedPoiId = poiId
         mapView.map.highlightPin(poiId)
         card.show(name: record.title, address: record.address)
         loadThumbnail(for: record.asLaTracePoi())
@@ -240,6 +268,7 @@ final class MapViewController: UIViewController {
 
         card.onClose = { [weak self] in
             self?.card.isHidden = true
+            self?.selectedPoiId = nil
             self?.mapView.map.highlightPin(nil)
         }
 
@@ -270,6 +299,33 @@ final class MapViewController: UIViewController {
 
     private func setSearchAreaButtonVisible(_ visible: Bool) {
         searchAreaButton.isHidden = !visible
+    }
+
+    /// Affiche a la place de la carte tant que `Config` porte les valeurs du depot :
+    /// celles-ci ne designent aucun deploiement, la web view chargerait une URL qui
+    /// n'existe pas et l'ecran resterait vide sans dire pourquoi.
+    private func showConfigurationNotice() {
+        let label = UILabel()
+        label.text = """
+            Configuration manquante.
+
+            Renseignez les quatre valeurs de LaTraceExample/Config.swift : cle publiable, \
+            configId, hote Explore et passerelle API. La Trace vous les transmet avec vos \
+            identifiants de demo (voir le README).
+            """
+        label.numberOfLines = 0
+        label.textAlignment = .center
+        label.font = .preferredFont(forTextStyle: .callout)
+        label.textColor = .secondaryLabel
+        label.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(label)
+
+        let guide = view.layoutMarginsGuide
+        NSLayoutConstraint.activate([
+            label.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            label.leadingAnchor.constraint(equalTo: guide.leadingAnchor),
+            label.trailingAnchor.constraint(equalTo: guide.trailingAnchor),
+        ])
     }
 }
 
