@@ -1,0 +1,12 @@
+[
+  { "id": "1", "title": "Table des Halles", "kind": "restaurant", "lat": 48.8622, "lng": 2.3465, "address": "5 rue Montorgueil", "city": "Paris", "postalCode": "75001", "country": "FR", "price": "€€", "url": "https://example.com/lieux/1", "tags": ["terrasse"] },
+  { "id": "2", "title": "Le Petit Comptoir", "kind": "restaurant", "lat": 48.8698, "lng": 2.3412, "address": "18 rue Vivienne", "city": "Paris", "postalCode": "75002", "country": "FR", "price": "€€€", "url": "https://example.com/lieux/2", "tags": ["reservation"] },
+  { "id": "3", "title": "Cafe des Archives", "kind": "cafe", "lat": 48.8590, "lng": 2.3580, "address": "12 rue des Archives", "city": "Paris", "postalCode": "75004", "country": "FR", "price": "€", "url": "https://example.com/lieux/3", "tags": ["terrasse", "wifi"] },
+  { "id": "4", "title": "Hotel Oberkampf", "kind": "hotel", "lat": 48.8635, "lng": 2.3700, "address": "3 rue Oberkampf", "city": "Paris", "postalCode": "75011", "country": "FR", "price": "€€€", "url": "https://example.com/lieux/4" },
+  { "id": "5", "title": "Musee du Quartier", "kind": "museum", "lat": 48.8566, "lng": 2.3522, "address": "1 place de l'Hotel de Ville", "city": "Paris", "postalCode": "75004", "country": "FR", "url": "https://example.com/lieux/5", "tags": ["famille"] },
+  { "id": "6", "title": "Jardin du Canal", "kind": "park", "lat": 48.8710, "lng": 2.3660, "address": "24 quai de Valmy", "city": "Paris", "postalCode": "75010", "country": "FR", "url": "https://example.com/lieux/6", "tags": ["famille"] },
+  { "id": "7", "title": "Atelier Velo Bastille", "kind": "bikeshop", "lat": 48.8530, "lng": 2.3690, "address": "9 rue de la Roquette", "city": "Paris", "postalCode": "75011", "country": "FR", "price": "€€", "url": "https://example.com/lieux/7", "tags": ["reparation"] },
+  { "id": "8", "title": "Comptoir Tiquetonne", "kind": "cafe", "lat": 48.8672, "lng": 2.3499, "address": "14 rue Tiquetonne", "city": "Paris", "postalCode": "75002", "country": "FR", "price": "€€", "url": "https://example.com/lieux/8" },
+  { "id": "9", "title": "Belvedere de Belleville", "kind": "park", "lat": 48.8721, "lng": 2.3841, "address": "47 rue Piat", "city": "Paris", "postalCode": "75020", "country": "FR", "url": "https://example.com/lieux/9", "tags": ["point-de-vue"] },
+  { "id": "10", "title": "Auberge Saint-Paul", "kind": "hotel", "lat": 48.8548, "lng": 2.3610, "address": "7 rue Saint-Paul", "city": "Paris", "postalCode": "75004", "country": "FR", "price": "€€", "url": "https://example.com/lieux/10" }
+]

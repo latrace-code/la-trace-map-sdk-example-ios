@@ -1,0 +1,43 @@
+name: LaTraceExample
+
+options:
+  bundleIdPrefix: com.example.latrace
+  deploymentTarget:
+    iOS: "15.0"
+  developmentLanguage: fr
+
+packages:
+  # SDK Swift La Trace. `from: 0.0.1` suit les versions publiees ; pour travailler
+  # contre une copie locale, remplacer les deux lignes par `path: ../la-trace-map-sdk-swift`.
+  LaTraceMapSDK:
+    url: https://github.com/latrace-code/la-trace-map-sdk-swift.git
+    from: 0.0.1
+
+targets:
+  LaTraceExample:
+    type: application
+    platform: iOS
+    sources:
+      - LaTraceExample
+    info:
+      path: LaTraceExample/Info.plist
+      properties:
+        UILaunchScreen: {}
+        CFBundleDisplayName: "La Trace Example"
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+          UISceneConfigurations:
+            UIWindowSceneSessionRoleApplication:
+              - UISceneConfigurationName: "Default Configuration"
+                UISceneDelegateClassName: "$(PRODUCT_MODULE_NAME).SceneDelegate"
+    dependencies:
+      - package: LaTraceMapSDK
+        product: LaTraceMapSDK
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.latrace.example
+        TARGETED_DEVICE_FAMILY: "1,2"
+        SWIFT_VERSION: "5.9"
+        # Aucune equipe de signature : Xcode demandera la votre au premier build sur
+        # device. Le simulateur n'en a pas besoin.
+        CODE_SIGN_STYLE: Automatic

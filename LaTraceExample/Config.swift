@@ -1,0 +1,45 @@
+import Foundation
+import LaTraceMapSDK
+
+// Configuration de l'exemple. Les quatre premieres valeurs vous sont transmises par
+// La Trace avec vos identifiants de demo ; celles ci-dessous sont des valeurs de
+// demonstration, pas des identifiants reels.
+//
+// Rien ici n'est un secret : sur iOS, tout ce qui est dans le binaire est lisible
+// (voir la section « Cles et secrets » du README). Seule une cle PUBLIABLE a sa place
+// dans une app ; le secret de signature des cartes statiques, lui, n'en a aucune.
+enum Config {
+
+    /// Cle publiable native (`pk_live_*`). Elle doit etre provisionnee avec
+    /// `allowedOrigins: ["*"]` : un client natif n'envoie pas d'en-tete `Origin`, et
+    /// une cle restreinte a des domaines repond 403 `origin_not_allowed` sur
+    /// `/geocode` et `/static-map`.
+    static let apiKey = "pk_test_votre_cle"
+
+    /// Id de votre carte (`ClientMap`) : territoire, theme et compteur de stats.
+    static let configId = "00000000-0000-0000-0000-000000000000"
+
+    /// Hote qui sert la carte `/explore`. Depend de l'environnement, jamais devine
+    /// par le SDK : La Trace vous le communique avec la cle.
+    static let exploreBaseURL = URL(string: "https://pre-prod--latrace.netlify.app")!
+
+    /// Passerelle API (`/geocode`, `/static-map`). Ce n'est PAS l'hote Explore :
+    /// celui-ci repond son shell SPA sur n'importe quel chemin.
+    static let apiBaseURL = URL(string: "https://preprod.routinglatrace.com")!
+
+    /// Allowlist ISO-2 du geocodage. Sans elle, l'index repond loin hors de votre
+    /// territoire ("Gent" renvoie un resultat neerlandais).
+    static let geocodeCountries = "fr,be"
+
+    /// Couleur du marqueur par categorie hote (celle produite par `ApiToPoi`).
+    /// Source unique : la carte interactive et la vignette statique lisent cette
+    /// meme table, donc le pin d'une fiche est celui de la carte.
+    static let poiColors: [String: ConfigOverride.PoiColor] = [
+        "restaurant": ConfigOverride.PoiColor(background: "#FFF3B0", text: "#C79A00"),
+        "cafe": ConfigOverride.PoiColor(background: "#FBE7D3", text: "#E8720C"),
+        "lodging": ConfigOverride.PoiColor(background: "#DDEEF9", text: "#3B9BD6"),
+        "culture": ConfigOverride.PoiColor(background: "#E7DCEE", text: "#774192"),
+        "nature": ConfigOverride.PoiColor(background: "#DFF2E1", text: "#2F8F46"),
+        "bike": ConfigOverride.PoiColor(background: "#FBE0E1", text: "#E5484D"),
+    ]
+}

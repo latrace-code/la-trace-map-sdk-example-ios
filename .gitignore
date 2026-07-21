@@ -1,0 +1,18 @@
+# Projet Xcode genere par XcodeGen
+*.xcodeproj
+*.xcworkspace
+LaTraceExample/Info.plist
+
+# Xcode / SPM
+.build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+.swiftpm/
+
+# macOS
+.DS_Store
+
+# Build
+build/
+*.log
