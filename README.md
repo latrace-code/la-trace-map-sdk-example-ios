@@ -64,7 +64,7 @@ fichiers » ne compile pas (deux `@main`) :
 
 | Valeur | Ce que c'est |
 | --- | --- |
-| `apiKey` | Cle publiable native (`pk_live_*`). Doit etre provisionnee avec `allowedOrigins: ["*"]` : un client natif n'envoie pas d'en-tete `Origin`, et une cle restreinte a des domaines repond 403 `origin_not_allowed` sur `/geocode` et `/static-map`. |
+| `apiKey` | Cle publiable native. En preprod (integration), La Trace vous fournit une cle `pk_test_*` ; la `pk_live_*` de production arrive a la mise en service. Dans les deux cas, provisionnee avec `allowedOrigins: ["*"]` : un client natif n'envoie pas d'en-tete `Origin`, et une cle restreinte a des domaines repond 403 `origin_not_allowed` sur `/geocode` et `/static-map`. |
 | `configId` | Id de votre carte (`ClientMap`) : territoire, theme, compteur de stats. Un UUID. |
 | `exploreBaseURL` | Hote qui sert la carte `/explore`. Tous les deploiements Explore ne conviennent pas : le pont exige un front qui sert le **transport natif** (`transport=native`). C'est un fait de deploiement, pas une constante, et c'est pourquoi le SDK ne le devine jamais : La Trace vous donne l'hote qui convient a votre environnement. |
 | `apiBaseURL` | Passerelle API, qui sert `/geocode` et `/static-map`. **Pas** l'hote Explore : celui-ci repond son shell SPA sur n'importe quel chemin. |
@@ -143,8 +143,9 @@ Sur iOS il n'y a pas de « cote serveur » : **tout ce qui est dans le binaire e
 lisible**, y compris une valeur planquee dans un `.plist` ou un `.xcconfig`. La regle
 est donc simple.
 
-- La cle `pk_live_*` **peut** vivre dans l'app : elle est publiable par construction.
-  La barriere n'est pas le secret, c'est le couple cle + quota + `configId`.
+- La cle publiable (`pk_test_*` en preprod, `pk_live_*` en production) **peut** vivre
+  dans l'app : elle est publiable par construction. La barriere n'est pas le secret,
+  c'est le couple cle + quota + `configId`.
 - Le secret HMAC de signature des cartes statiques **ne peut pas** : il signe des URL
   au nom de votre compte. Il n'a sa place que sur un serveur.
 - Et vous n'en avez pas besoin ici. La signature (`?key=` + `sig` + `exp`) n'existe que

@@ -15,11 +15,12 @@ enum Config {
     /// Marqueur des valeurs non renseignees, reconnu par ``isPlaceholder``.
     private static let toFill = "a-remplacer"
 
-    /// Cle publiable native (`pk_live_*`). Elle doit etre provisionnee avec
-    /// `allowedOrigins: ["*"]` : un client natif n'envoie pas d'en-tete `Origin`, et
-    /// une cle restreinte a des domaines repond 403 `origin_not_allowed` sur
-    /// `/geocode` et `/static-map`.
-    static let apiKey = "pk_live_\(toFill)"
+    /// Cle publiable native. Pendant l'integration en preprod, La Trace vous fournit une
+    /// cle `pk_test_*` ; la `pk_live_*` de production vous est communiquee a la mise en
+    /// service. Dans les deux cas elle doit etre provisionnee avec `allowedOrigins: ["*"]`
+    /// : un client natif n'envoie pas d'en-tete `Origin`, et une cle restreinte a des
+    /// domaines repond 403 `origin_not_allowed` sur `/geocode` et `/static-map`.
+    static let apiKey = toFill
 
     /// Id de votre carte (`ClientMap`) : territoire, theme et compteur de stats.
     /// C'est un UUID chez vous. Le marqueur n'en a volontairement pas la forme :
