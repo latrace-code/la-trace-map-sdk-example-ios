@@ -113,7 +113,10 @@ en preprod ; l'hote de production vous est communique a la mise en service.
   **Pour avoir ce logo aussi sur la vignette statique, il faut une URL `https`** : la
   carte rend le data URI dans le navigateur embarque, la vignette est composee par le
   serveur, qui ne sait que fetcher une URL. `laTraceStaticMapRequest` filtre donc les
-  data URI au lieu de les envoyer pour rien.
+  data URI au lieu de les envoyer pour rien. L'exemple le montre : `Config.poiIcons`
+  (un data URI de demo sur la categorie `cafe`) est passe **et** a la carte
+  (`ConfigOverride.poiIcons`) **et** a la vignette (`laTraceStaticMapRequest(... poiIcons:)`).
+  Le logo apparait donc sur la carte ; sur la vignette il faut basculer en `https`.
 - `poiDetailMode: .hostHandled` : obligatoire des lors que vous affichez votre propre
   fiche. Le defaut de l'embed (`panel`) ouvrirait un panneau invisible sous le mode nu,
   et le marqueur tape resterait emphase indefiniment.

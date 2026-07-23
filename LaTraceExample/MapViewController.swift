@@ -24,6 +24,8 @@ final class MapViewController: UIViewController {
         exploreBaseUrl: Config.exploreBaseURL,
         initialConfig: ConfigOverride(
             poiColors: Config.poiColors,
+            // Logo custom du marqueur (en plus de la couleur), voir Config.poiIcons.
+            poiIcons: Config.poiIcons,
             // La fiche est chez nous : l'embed ne doit ouvrir aucun panneau ni aucune
             // preview, sinon sa propre surface se glisse sous la notre et le marqueur
             // tape reste emphase indefiniment.
@@ -197,8 +199,11 @@ final class MapViewController: UIViewController {
             zoom: 15,
             size: CGSize(width: 96, height: 72),
             pois: [poi],
-            // Meme table que la carte : le pin de la vignette est celui de la carte.
-            poiColors: Config.poiColors
+            // Memes tables que la carte : le pin de la vignette est celui de la carte.
+            // Un logo en data URI est ignore ici (https uniquement, cf. Config.poiIcons) :
+            // la vignette retombe alors sur le glyphe La Trace, la carte garde le logo.
+            poiColors: Config.poiColors,
+            poiIcons: Config.poiIcons
         ) else {
             return
         }

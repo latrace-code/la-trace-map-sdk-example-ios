@@ -60,4 +60,27 @@ enum Config {
         "nature": ConfigOverride.PoiColor(background: "#DFF2E1", text: "#2F8F46"),
         "bike": ConfigOverride.PoiColor(background: "#FBE0E1", text: "#E5484D"),
     ]
+
+    /// SVG generique servant de logo de demo (une tasse de cafe). Chez vous : le picto
+    /// de votre marque.
+    private static let cafeGlyphSVG =
+        "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#101214\"" +
+        " stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\">" +
+        "<path d=\"M4 8h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V8Z\"/>" +
+        "<path d=\"M17 9h2a2 2 0 0 1 0 4h-2\"/><path d=\"M8 2v2M12 2v2\"/></svg>"
+
+    /// Logo custom du marqueur, en plus de la couleur (`poiColors`). Keye par categorie
+    /// hote OU par `PoiType` (la casse tranche : precedence poiType > categorie).
+    /// Valeurs acceptees :
+    /// - sur la CARTE interactive : une URL `https` OU un data URI SVG ;
+    /// - sur la VIGNETTE static-map : `https` UNIQUEMENT. Le serveur ne fait que fetcher
+    ///   l'URL ; un data URI (ou une URL portant un `;`) est filtre et le pin retombe sur
+    ///   le glyphe La Trace.
+    /// Ici un data URI generique pour la demo : il s'affiche sur la carte, PAS sur la
+    /// vignette. Chez vous, pointez une URL `https` (votre CDN) pour l'avoir aussi sur la
+    /// vignette. La meme table alimente la carte et la vignette (voir `MapViewController`).
+    static let poiIcons: [String: String] = [
+        "cafe": "data:image/svg+xml;base64," + Data(cafeGlyphSVG.utf8).base64EncodedString(),
+        // "cafe": "https://votre-cdn.example.com/pictos/cafe.svg",  // pour l'avoir AUSSI sur la vignette
+    ]
 }
